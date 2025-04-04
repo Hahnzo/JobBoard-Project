@@ -5,3 +5,12 @@
 /.vs
 /Jobboard-backend/Jobboard-backend/.vs/Jobboard-backend
 /Jobboard-backend/Jobboard-backend/obj
+/Jobboard-backend/.vs
+/Jobboard-backend/JobBoardApp.API/.vs/JobBoardApp.API
+/Jobboard-backend/JobBoardApp.API/obj
+/Jobboard-backend/JobBoardApp.Application/.vs
+/Jobboard-backend/JobBoardApp.Application/obj
+/Jobboard-backend/JobBoardApp.Core/.vs
+/Jobboard-backend/JobBoardApp.Core/obj
+/Jobboard-backend/JobBoardApp.Infrastructure/.vs
+/Jobboard-backend/JobBoardApp.Infrastructure/obj

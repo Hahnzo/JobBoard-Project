@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Jobboard_backend.Controllers;
+namespace JobBoardApp.API.Controllers;
 
 [ApiController]
 [Route("[controller]")]

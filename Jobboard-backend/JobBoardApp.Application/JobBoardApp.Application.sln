@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35825.156
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jobboard-backend", "Jobboard-backend.csproj", "{515E4C46-5782-4C3A-9795-EE77D5DCF315}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobBoardApp.Application", "JobBoardApp.Application.csproj", "{852A7EA8-89EC-45B2-B430-34380BB2BFB7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -10,15 +10,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{515E4C46-5782-4C3A-9795-EE77D5DCF315}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{515E4C46-5782-4C3A-9795-EE77D5DCF315}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{515E4C46-5782-4C3A-9795-EE77D5DCF315}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{515E4C46-5782-4C3A-9795-EE77D5DCF315}.Release|Any CPU.Build.0 = Release|Any CPU
+		{852A7EA8-89EC-45B2-B430-34380BB2BFB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{852A7EA8-89EC-45B2-B430-34380BB2BFB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{852A7EA8-89EC-45B2-B430-34380BB2BFB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{852A7EA8-89EC-45B2-B430-34380BB2BFB7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {12F3C55A-60C9-4B78-83A2-43EB7D213CC1}
+		SolutionGuid = {4E37C36F-002E-4075-9360-55CCA8D36A88}
 	EndGlobalSection
 EndGlobal

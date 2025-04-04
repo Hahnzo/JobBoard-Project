@@ -1,4 +1,4 @@
-namespace Jobboard_backend
+namespace JobBoardApp.Application
 {
     public class WeatherForecast
     {
