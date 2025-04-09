@@ -196,4 +196,3 @@ export default function ResumeUploadModal({ isOpen, onClose, onUploadComplete }:
     </Dialog>
   )
 }
-

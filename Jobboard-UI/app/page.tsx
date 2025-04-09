@@ -10,14 +10,6 @@ import ResumeUploadModal from "@/components/resume-upload-modal"
 import { useRouter } from "next/navigation"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import JobApplicationForm from "@/components/job-application-form"
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
 
 // Extended mock data for projects - more items for pagination
 export const mockProjects = [
@@ -755,41 +747,17 @@ export default function Home() {
           </div>
         </div>
 
-        <main className="container mx-auto px-4 py-6">
+        <main className="container mx-auto px-4 pt-6 pb-0">
           <div className="flex flex-col lg:flex-row gap-6">
-            <div className="w-full lg:w-1/3 space-y-6">
+            <div className="w-full lg:w-1/3">
               <ProjectListings
                 projects={currentProjects}
                 selectedProjectId={selectedProjectId}
                 onSelectProject={setSelectedProjectId}
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
               />
-
-              {/* Pagination */}
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                      className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                    />
-                  </PaginationItem>
-
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <PaginationItem key={page}>
-                      <PaginationLink isActive={currentPage === page} onClick={() => setCurrentPage(page)}>
-                        {page}
-                      </PaginationLink>
-                    </PaginationItem>
-                  ))}
-
-                  <PaginationItem>
-                    <PaginationNext
-                      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                      className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
             </div>
 
             <div className="w-full lg:w-2/3 space-y-6">
@@ -818,4 +786,3 @@ export default function Home() {
     </div>
   )
 }
-

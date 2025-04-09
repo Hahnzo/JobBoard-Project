@@ -282,4 +282,3 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
     </div>
   )
 }
-

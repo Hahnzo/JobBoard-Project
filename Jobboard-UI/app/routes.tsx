@@ -4,4 +4,3 @@ export default function Routes() {
   redirect("/landing-page")
   return null
 }
-

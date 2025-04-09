@@ -2,9 +2,17 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { Bookmark, Check } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
 
 // Define the Project type
 export type Project = {
@@ -29,10 +37,21 @@ interface ProjectListingsProps {
   projects: Project[]
   selectedProjectId: number
   onSelectProject: (id: number) => void
+  currentPage: number
+  totalPages: number
+  onPageChange: (page: number) => void
 }
 
-export default function ProjectListings({ projects, selectedProjectId, onSelectProject }: ProjectListingsProps) {
+export default function ProjectListings({
+  projects,
+  selectedProjectId,
+  onSelectProject,
+  currentPage,
+  totalPages,
+  onPageChange,
+}: ProjectListingsProps) {
   const [savedProjects, setSavedProjects] = useState<number[]>([])
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
 
   const toggleSaveProject = (id: number, e: React.MouseEvent) => {
     e.stopPropagation() // Prevent triggering the card click
@@ -44,7 +63,11 @@ export default function ProjectListings({ projects, selectedProjectId, onSelectP
   }
 
   return (
-    <div className="space-y-4 max-h-[calc(100vh-220px)] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+    <div
+      ref={scrollContainerRef}
+      className="space-y-4 h-[calc(100vh-120px)] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
+    >
+      {/* Project cards */}
       {projects.map((project) => (
         <div
           key={project.id}
@@ -106,6 +129,35 @@ export default function ProjectListings({ projects, selectedProjectId, onSelectP
           </div>
         </div>
       ))}
+
+      {/* Pagination always visible at the end of the card list */}
+      <div className="py-4 mt-2">
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => onPageChange(Math.max(currentPage - 1, 1))}
+                className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+              />
+            </PaginationItem>
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <PaginationItem key={page}>
+                <PaginationLink isActive={currentPage === page} onClick={() => onPageChange(page)}>
+                  {page}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+
+            <PaginationItem>
+              <PaginationNext
+                onClick={() => onPageChange(Math.min(currentPage + 1, totalPages))}
+                className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </div>
     </div>
   )
 }
@@ -139,4 +191,3 @@ if (typeof document !== "undefined") {
   style.textContent = scrollbarStyles
   document.head.appendChild(style)
 }
-

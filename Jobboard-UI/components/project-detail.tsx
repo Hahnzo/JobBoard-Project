@@ -100,4 +100,3 @@ export default function ProjectDetail({ project, onApplyClick }: ProjectDetailPr
     </div>
   )
 }
-
