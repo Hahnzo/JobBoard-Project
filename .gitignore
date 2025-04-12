@@ -14,3 +14,4 @@
 /Jobboard-backend/JobBoardApp.Core/obj
 /Jobboard-backend/JobBoardApp.Infrastructure/.vs
 /Jobboard-backend/JobBoardApp.Infrastructure/obj
+Jobboard-backend-supabase/.env
