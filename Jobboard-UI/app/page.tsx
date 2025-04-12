@@ -10,6 +10,9 @@ import ResumeUploadModal from "@/components/resume-upload-modal"
 import { useRouter } from "next/navigation"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import JobApplicationForm from "@/components/job-application-form"
+import SignUpModal from "@/components/sign-up-modal"
+import SignInModal from "@/components/sign-in-modal"
+import { useAuth } from "@/context/auth-context"
 
 // Extended mock data for projects - more items for pagination
 export const mockProjects = [
@@ -414,6 +417,7 @@ const jobTypes = [
 ]
 
 export default function Home() {
+  const { user, isLoading, logout } = useAuth()
   // State to track the selected project
   const [selectedProjectId, setSelectedProjectId] = useState<number>(1)
   const [scrolled, setScrolled] = useState(false)
@@ -427,6 +431,8 @@ export default function Home() {
   const [selectedJobType, setSelectedJobType] = useState("all")
   const [currentPage, setCurrentPage] = useState(1)
   const projectsPerPage = 20
+  const [showSignUpModal, setShowSignUpModal] = useState(false)
+  const [showSignInModal, setShowSignInModal] = useState(false)
 
   // Find the selected project from the mock data
   const selectedProject = mockProjects.find((project) => project.id === selectedProjectId) || mockProjects[0]
@@ -568,23 +574,62 @@ export default function Home() {
                     </svg>
                   </button>
                 </div>
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src="/placeholder.svg?height=32&width=32" alt="User" />
-                  <AvatarFallback>JS</AvatarFallback>
-                </Avatar>
+                {user ? (
+                  <div className="flex items-center gap-4">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src="/placeholder.svg?height=32&width=32" alt="User" />
+                      <AvatarFallback>{user.firstName[0]}{user.lastName[0]}</AvatarFallback>
+                    </Avatar>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={logout}
+                      className="border-white text-emerald-500 hover:bg-white hover:text-emerald-600 font-medium"
+                    >
+                      Sign Out
+                    </Button>
+                  </div>
+                ) : (
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="border-white text-emerald-500 hover:bg-white hover:text-emerald-600 font-medium"
+                      onClick={() => setShowSignInModal(true)}
+                    >
+                      Sign In
+                    </Button>
+                    <Button
+                      size="sm"
+                      className="bg-emerald-500 hover:bg-emerald-600 text-white"
+                      onClick={() => setShowSignUpModal(true)}
+                    >
+                      Sign Up
+                    </Button>
+                  </>
+                )}
               </>
             ) : (
               <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-white text-white hover:bg-white hover:text-emerald-600"
-                >
-                  Sign In
-                </Button>
-                <Button size="sm" className="bg-emerald-500 hover:bg-emerald-600 text-white">
-                  Sign Up
-                </Button>
+                {!user && (
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="border-white text-emerald-500 hover:bg-white hover:text-emerald-600 font-medium"
+                      onClick={() => setShowSignInModal(true)}
+                    >
+                      Sign In
+                    </Button>
+                    <Button
+                      size="sm"
+                      className="bg-emerald-500 hover:bg-emerald-600 text-white"
+                      onClick={() => setShowSignUpModal(true)}
+                    >
+                      Sign Up
+                    </Button>
+                  </>
+                )}
               </>
             )}
           </div>
@@ -671,7 +716,7 @@ export default function Home() {
       {/* Main Content Section */}
       <div ref={mainContentRef} className="min-h-screen bg-gray-100 pt-20">
         {/* Horizontal Filter Bar */}
-        <div className="bg-white shadow-sm border-b">
+        <div className="bg-white shadow-sm border-b sticky top-20 z-10">
           <div className="container mx-auto px-4 py-4">
             <div className="flex flex-col md:flex-row items-center gap-4">
               <div className="flex space-x-2 overflow-x-auto scrollbar-hide">
@@ -776,6 +821,12 @@ export default function Home() {
           companyName={selectedProject.company}
         />
       )}
+
+      {/* Sign Up Modal */}
+      <SignUpModal isOpen={showSignUpModal} onClose={() => setShowSignUpModal(false)} />
+
+      {/* Sign In Modal */}
+      <SignInModal isOpen={showSignInModal} onClose={() => setShowSignInModal(false)} />
 
       {/* Resume Upload Modal */}
       <ResumeUploadModal
