@@ -21,67 +21,106 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
+  const [user, setUser] = useState<User | null>(() => {
+    // Initialize user state from localStorage if available
+    if (typeof window !== 'undefined') {
+      const storedUser = localStorage.getItem('user')
+      console.log('Initial user state from localStorage:', storedUser)
+      return storedUser ? JSON.parse(storedUser) : null
+    }
+    return null
+  })
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const validateSession = async () => {
-      const token = localStorage.getItem('token')
-      if (!token) {
-        setIsLoading(false)
-        return
-      }
+    const checkSession = async () => {
+      if (typeof window === 'undefined') return
 
-      try {
-        const response = await fetch('http://localhost:3001/api/auth/validate-session', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        })
-        const data = await response.json()
-        if (data.isValid) {
-          const storedUser = localStorage.getItem('user')
-          if (storedUser) {
-            setUser(JSON.parse(storedUser))
+      const token = localStorage.getItem('token')
+      const storedUser = localStorage.getItem('user')
+      console.log('Checking session - Token:', token ? 'exists' : 'missing')
+      console.log('Checking session - User:', storedUser)
+
+      if (token && storedUser) {
+        try {
+          console.log('Validating session with backend...')
+          const response = await fetch('http://localhost:3001/api/auth/validate-session', {
+            headers: { 'Authorization': `Bearer ${token}` }
+          })
+
+          // Check if the response is JSON
+          const contentType = response.headers.get('content-type')
+          if (contentType && contentType.includes('application/json')) {
+            const data = await response.json()
+            if (response.ok) {
+              console.log('Session is valid')
+              const userData = JSON.parse(storedUser)
+              setUser(userData)
+            } else {
+              console.log('Session is invalid:', data.message || 'Unknown error')
+              localStorage.removeItem('token')
+              localStorage.removeItem('user')
+              setUser(null)
+            }
+          } else {
+            // Handle non-JSON response (likely HTML error page)
+            const text = await response.text()
+            console.error('Server returned non-JSON response:', text.substring(0, 100))
+            // Keep the user logged in if we have valid localStorage data
+            const userData = JSON.parse(storedUser)
+            setUser(userData)
           }
-        } else {
-          localStorage.removeItem('token')
-          localStorage.removeItem('user')
+        } catch (error) {
+          console.error('Session validation failed:', error)
+          // Keep the user logged in if we have valid localStorage data
+          const userData = JSON.parse(storedUser)
+          setUser(userData)
         }
-      } catch (error) {
-        console.error('Session validation failed:', error)
-        localStorage.removeItem('token')
-        localStorage.removeItem('user')
-      } finally {
-        setIsLoading(false)
+      } else {
+        console.log('No session data found in localStorage')
       }
+      setIsLoading(false)
     }
 
-    validateSession()
+    checkSession()
   }, [])
 
   const login = (token: string, userData: User) => {
-    localStorage.setItem('token', token)
-    localStorage.setItem('user', JSON.stringify(userData))
+    console.log('Logging in user:', userData)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('token', token)
+      localStorage.setItem('user', JSON.stringify(userData))
+      console.log('Stored token and user data in localStorage')
+    }
     setUser(userData)
   }
 
   const logout = async () => {
-    const token = localStorage.getItem('token')
-    if (token) {
-      try {
-        await fetch('http://localhost:3001/api/auth/logout', {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${token}` }
-        })
-      } catch (error) {
-        console.error('Logout failed:', error)
+    console.log('Logging out user')
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('token')
+      if (token) {
+        try {
+          await fetch('http://localhost:3001/api/auth/logout', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` }
+          })
+        } catch (error) {
+          console.error('Logout failed:', error)
+        }
       }
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      console.log('Removed token and user data from localStorage')
     }
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
     setUser(null)
   }
 
   const makeAuthenticatedRequest = async (url: string, options: RequestInit = {}) => {
+    if (typeof window === 'undefined') {
+      throw new Error('Cannot make authenticated request on server side')
+    }
+    
     const token = localStorage.getItem('token')
     return fetch(url, {
       ...options,

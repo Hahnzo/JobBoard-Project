@@ -15,11 +15,13 @@ interface SignInModalProps {
 
 export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const { login } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+    setError(null)
 
     try {
       const formData = {
@@ -32,18 +34,27 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include', // Important for cookies
         body: JSON.stringify(formData),
       })
 
+      const data = await response.json()
+
       if (!response.ok) {
-        throw new Error('Login failed')
+        throw new Error(data.message || 'Login failed')
       }
 
-      const data = await response.json()
+      // Make sure the response contains both token and user data
+      if (!data.token || !data.user) {
+        throw new Error('Invalid response from server')
+      }
+
+      // Store the session data
       login(data.token, data.user)
       onClose()
     } catch (error) {
       console.error('Login error:', error)
+      setError(error instanceof Error ? error.message : 'An error occurred during login')
     } finally {
       setIsLoading(false)
     }
@@ -60,6 +71,12 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+          {error && (
+            <div className="text-red-500 text-sm text-center">
+              {error}
+            </div>
+          )}
+          
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input id="email" type="email" placeholder="name@example.com" required />
@@ -70,7 +87,7 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
             <Input id="password" type="password" required />
           </div>
 
-          <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700" disabled={isLoading}>
+          <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-600" disabled={isLoading}>
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

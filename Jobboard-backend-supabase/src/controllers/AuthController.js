@@ -80,11 +80,22 @@ class AuthController {
 
   static async validateSession(req, res) {
     try {
+      // Check if user is attached to request (from auth middleware)
+      if (!req.user || !req.user.id) {
+        return res.status(401).json({ 
+          error: 'No valid session found',
+          isValid: false
+        });
+      }
+
       const userId = req.user.id;
       const user = await User.findById(userId);
       
       if (!user) {
-        return res.status(404).json({ error: 'User not found' });
+        return res.status(404).json({ 
+          error: 'User not found',
+          isValid: false
+        });
       }
       
       // Remove password from response
@@ -95,6 +106,7 @@ class AuthController {
         isValid: true
       });
     } catch (error) {
+      console.error('Session validation error:', error);
       return res.status(401).json({ 
         error: 'Invalid session',
         isValid: false
