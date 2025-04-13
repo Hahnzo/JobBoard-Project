@@ -13,8 +13,9 @@ interface User {
 interface AuthContextType {
   user: User | null
   isLoading: boolean
-  login: (userData: User) => void
+  login: (token: string, userData: User) => void
   logout: () => void
+  makeAuthenticatedRequest: (url: string, options?: RequestInit) => Promise<Response>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -24,44 +25,75 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Check for existing session on mount
-    const checkSession = async () => {
+    const validateSession = async () => {
+      const token = localStorage.getItem('token')
+      if (!token) {
+        setIsLoading(false)
+        return
+      }
+
       try {
-        const response = await fetch('http://localhost:3001/api/auth/session', {
-          credentials: 'include'
+        const response = await fetch('http://localhost:3001/api/auth/validate-session', {
+          headers: { 'Authorization': `Bearer ${token}` }
         })
-        if (response.ok) {
-          const userData = await response.json()
-          setUser(userData)
+        const data = await response.json()
+        if (data.isValid) {
+          const storedUser = localStorage.getItem('user')
+          if (storedUser) {
+            setUser(JSON.parse(storedUser))
+          }
+        } else {
+          localStorage.removeItem('token')
+          localStorage.removeItem('user')
         }
       } catch (error) {
-        console.error('Session check failed:', error)
+        console.error('Session validation failed:', error)
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
       } finally {
         setIsLoading(false)
       }
     }
 
-    checkSession()
+    validateSession()
   }, [])
 
-  const login = (userData: User) => {
+  const login = (token: string, userData: User) => {
+    localStorage.setItem('token', token)
+    localStorage.setItem('user', JSON.stringify(userData))
     setUser(userData)
   }
 
   const logout = async () => {
-    try {
-      await fetch('http://localhost:3001/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include'
-      })
-      setUser(null)
-    } catch (error) {
-      console.error('Logout failed:', error)
+    const token = localStorage.getItem('token')
+    if (token) {
+      try {
+        await fetch('http://localhost:3001/api/auth/logout', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` }
+        })
+      } catch (error) {
+        console.error('Logout failed:', error)
+      }
     }
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+    setUser(null)
+  }
+
+  const makeAuthenticatedRequest = async (url: string, options: RequestInit = {}) => {
+    const token = localStorage.getItem('token')
+    return fetch(url, {
+      ...options,
+      headers: {
+        ...options.headers,
+        'Authorization': `Bearer ${token}`
+      }
+    })
   }
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, login, logout, makeAuthenticatedRequest }}>
       {children}
     </AuthContext.Provider>
   )

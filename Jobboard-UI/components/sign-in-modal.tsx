@@ -32,7 +32,6 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include',
         body: JSON.stringify(formData),
       })
 
@@ -40,8 +39,8 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
         throw new Error('Login failed')
       }
 
-      const userData = await response.json()
-      login(userData)
+      const data = await response.json()
+      login(data.token, data.user)
       onClose()
     } catch (error) {
       console.error('Login error:', error)

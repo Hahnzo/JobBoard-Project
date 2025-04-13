@@ -546,8 +546,8 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-4">
-            {scrolled ? (
-              <>
+            {user ? (
+              <div className="flex items-center gap-4">
                 <button className="text-gray-500 hover:text-gray-700">
                   <Bell className="h-5 w-5" />
                 </button>
@@ -574,62 +574,40 @@ export default function Home() {
                     </svg>
                   </button>
                 </div>
-                {user ? (
-                  <div className="flex items-center gap-4">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src="/placeholder.svg?height=32&width=32" alt="User" />
-                      <AvatarFallback>{user.firstName[0]}{user.lastName[0]}</AvatarFallback>
-                    </Avatar>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={logout}
-                      className="border-white text-emerald-500 hover:bg-white hover:text-emerald-600 font-medium"
-                    >
-                      Sign Out
-                    </Button>
-                  </div>
-                ) : (
-                  <>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="border-white text-emerald-500 hover:bg-white hover:text-emerald-600 font-medium"
-                      onClick={() => setShowSignInModal(true)}
-                    >
-                      Sign In
-                    </Button>
-                    <Button
-                      size="sm"
-                      className="bg-emerald-500 hover:bg-emerald-600 text-white"
-                      onClick={() => setShowSignUpModal(true)}
-                    >
-                      Sign Up
-                    </Button>
-                  </>
-                )}
-              </>
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src="/placeholder.svg?height=32&width=32" alt="User" />
+                  <AvatarFallback>
+                    {user?.firstName && user?.lastName 
+                      ? `${user.firstName[0]}${user.lastName[0]}`
+                      : 'U'}
+                  </AvatarFallback>
+                </Avatar>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={logout}
+                  className="border-white text-emerald-500 hover:bg-white hover:text-emerald-600 font-medium"
+                >
+                  Sign Out
+                </Button>
+              </div>
             ) : (
               <>
-                {!user && (
-                  <>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="border-white text-emerald-500 hover:bg-white hover:text-emerald-600 font-medium"
-                      onClick={() => setShowSignInModal(true)}
-                    >
-                      Sign In
-                    </Button>
-                    <Button
-                      size="sm"
-                      className="bg-emerald-500 hover:bg-emerald-600 text-white"
-                      onClick={() => setShowSignUpModal(true)}
-                    >
-                      Sign Up
-                    </Button>
-                  </>
-                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-white text-emerald-500 hover:bg-white hover:text-emerald-600 font-medium"
+                  onClick={() => setShowSignInModal(true)}
+                >
+                  Sign In
+                </Button>
+                <Button
+                  size="sm"
+                  className="bg-emerald-500 hover:bg-emerald-600 text-white"
+                  onClick={() => setShowSignUpModal(true)}
+                >
+                  Sign Up
+                </Button>
               </>
             )}
           </div>
