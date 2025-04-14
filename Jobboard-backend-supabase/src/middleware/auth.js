@@ -51,9 +51,9 @@ const isAdmin = (req, res, next) => {
   }
 };
 
-// Middleware to check if user is company
+// Middleware to check if user is employer
 const isCompany = (req, res, next) => {
-  if (req.user && (req.user.role === 'company' || req.user.role === 'admin')) {
+  if (req.user && (req.user.role === 'employer' || req.user.role === 'admin')) {
     next();
   } else {
     return res.status(403).json({ error: 'Access denied: Company role required' });
