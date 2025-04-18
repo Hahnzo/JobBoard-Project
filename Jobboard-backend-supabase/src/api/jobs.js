@@ -1,3 +1,4 @@
+// src/api/jobs.js
 import apiClient from './client';
 
 export const getAllJobs = (params) => {

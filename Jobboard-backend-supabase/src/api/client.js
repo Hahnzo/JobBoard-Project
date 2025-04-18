@@ -1,25 +1,28 @@
+// src/api/client.js
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3001/api';
-
-// Create axios instance
 const apiClient = axios.create({
-  baseURL: API_URL,
+  baseURL: 'http://localhost:3001/api',
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Add a request interceptor to include auth token in requests
+// Add a request interceptor to add the auth token to every request
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    // Check if we're in a browser environment
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('token');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    return Promise.reject(error);
+  }
 );
 
 export default apiClient;

@@ -2,9 +2,10 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Bell, Bookmark, Shield, ArrowLeft, Upload, Plus, X } from "lucide-react"
+import { useAuth } from "@/context/auth-context"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -13,12 +14,25 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { createJob } from "@/api/jobs" // Import the jobs API service
 
 export default function AdminPage() {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [tags, setTags] = useState<string[]>([])
   const [tagInput, setTagInput] = useState("")
+  const { user, isLoading } = useAuth()
+  
+  // State for form fields with default values
+  const [jobType, setJobType] = useState("full-time")
+  const [experienceLevel, setExperienceLevel] = useState("mid-level")
+  
+  // Redirect if not logged in
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push('/auth/login');
+    }
+  }, [user, isLoading, router]);
 
   const handleAddTag = () => {
     if (tagInput.trim() && !tags.includes(tagInput.trim())) {
@@ -31,16 +45,90 @@ export default function AdminPage() {
     setTags(tags.filter((tag) => tag !== tagToRemove))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
 
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      // Capture state values before form processing to ensure they're not lost
+      const currentJobType = jobType;
+      const currentExperienceLevel = experienceLevel;
+
+      const form = e.target as HTMLFormElement
+      // Create form data object directly using state variables for select fields
+      const formData = {
+        title: (form.querySelector('#job-title') as HTMLInputElement)?.value.trim(),
+        description: (form.querySelector('#job-description') as HTMLTextAreaElement)?.value.trim(),
+        companyName: (form.querySelector('#company-name') as HTMLInputElement)?.value.trim(),
+        jobType: currentJobType, // Use captured state variable
+        location: (form.querySelector('#location') as HTMLInputElement)?.value.trim(),
+        salaryRange: (form.querySelector('#salary-range') as HTMLInputElement)?.value.trim(),
+        experienceLevel: currentExperienceLevel, // Use captured state variable
+        skills: tags
+      }
+  
+      // Debug: log formData after creation
+      console.log('FormData created:', formData);
+      console.log('jobType:', currentJobType, 'experienceLevel:', currentExperienceLevel);
+      // Validate required fields (ensure not empty after trim)
+      const requiredFields = ['title', 'description', 'companyName', 'jobType', 'location', 'salaryRange', 'experienceLevel']
+      const missingFields = requiredFields.filter(field => {
+        const value = formData[field as keyof typeof formData]
+        return !value || (typeof value === 'string' && value.trim() === '')
+      })
+      
+      if (missingFields.length > 0) {
+        throw new Error(`Please fill out all required fields: ${missingFields.join(', ')}`)
+      }
+
+      if (tags.length === 0) {
+        throw new Error('Please add at least one skill or tag')
+      }
+
+      // Use the imported API service instead of makeAuthenticatedRequest
+      const response = await createJob(formData);
+      
+      // Reset form
+      form.reset();
+      setTags([]);
+      setJobType("full-time");
+      setExperienceLevel("mid-level");
+      alert('Job posting created successfully!');
+      
+    } catch (error: any) {
+      console.error('Error creating job:', error);
+      
+      // Handle different types of errors
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        const errorMessage = error.response.data?.error || 'Failed to create job posting';
+        alert(errorMessage);
+        
+        // If unauthorized, redirect to login
+        if (error.response.status === 401) {
+          alert('You are not logged in or your session has expired. Redirecting to login page...');
+          router.push('/auth/login');
+        }
+      } else if (error.request) {
+        // The request was made but no response was received
+        alert('No response from server. Please check your connection and try again.');
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        alert(error.message || 'Failed to create job posting. Please try again.');
+      }
+    } finally {
       setIsSubmitting(false)
-      alert("Job posting created successfully!")
-      // Reset form or redirect
-    }, 1500)
+    }
+  }
+
+  // If still loading or not logged in, show loading state
+  if (isLoading || !user) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    );
   }
 
   return (
@@ -91,10 +179,13 @@ export default function AdminPage() {
             <button className="text-gray-500 hover:text-gray-700">
               <Bookmark className="h-5 w-5" />
             </button>
-            <Avatar className="h-8 w-8">
-              <AvatarImage src="/placeholder.svg?height=32&width=32" alt="Admin" />
-              <AvatarFallback>AD</AvatarFallback>
-            </Avatar>
+            <div className="flex items-center gap-2">
+              <Avatar className="h-8 w-8">
+                <AvatarImage src="/placeholder.svg?height=32&width=32" alt={user?.firstName || 'User'} />
+                <AvatarFallback>{user?.firstName?.[0]}{user?.lastName?.[0]}</AvatarFallback>
+              </Avatar>
+              <span className="text-sm font-medium hidden sm:inline-block">{user?.firstName} {user?.lastName}</span>
+            </div>
           </div>
         </div>
       </header>
@@ -142,7 +233,7 @@ export default function AdminPage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="job-type">Job Type</Label>
-                        <Select defaultValue="full-time">
+                        <Select value={jobType} onValueChange={setJobType}>
                           <SelectTrigger id="job-type">
                             <SelectValue placeholder="Select job type" />
                           </SelectTrigger>
@@ -156,7 +247,7 @@ export default function AdminPage() {
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="experience-level">Experience Level</Label>
-                        <Select defaultValue="mid-level">
+                        <Select value={experienceLevel} onValueChange={setExperienceLevel}>
                           <SelectTrigger id="experience-level">
                             <SelectValue placeholder="Select experience level" />
                           </SelectTrigger>
@@ -178,7 +269,7 @@ export default function AdminPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="salary-range">Salary Range</Label>
-                        <Input id="salary-range" placeholder="e.g. $50K - $75K" required />
+                        <Input id="salary-range" placeholder="e.g. $80,000 - $120,000" required />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="company-logo">Company Logo</Label>
@@ -261,7 +352,6 @@ export default function AdminPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {/* Sample job listings */}
                   <div className="bg-white border rounded-lg p-4">
                     <div className="flex justify-between items-start">
                       <div>
@@ -382,11 +472,11 @@ export default function AdminPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="admin-name">Admin Name</Label>
-                        <Input id="admin-name" defaultValue="John Smith" />
+                        <Input id="admin-name" defaultValue={`${user?.firstName || ''} ${user?.lastName || ''}`} />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="admin-email">Admin Email</Label>
-                        <Input id="admin-email" defaultValue="john@acme.com" />
+                        <Input id="admin-email" defaultValue={user?.email || ''} />
                       </div>
                     </div>
                     <div className="pt-4">

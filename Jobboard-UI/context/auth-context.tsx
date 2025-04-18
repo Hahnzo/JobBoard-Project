@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState, useEffect } from "react"
+import { createContext, useContext, useState, useEffect, use } from "react"
 
 interface User {
   id: string
@@ -89,8 +89,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     console.log('Logging in user:', userData)
     if (typeof window !== 'undefined') {
       localStorage.setItem('token', token)
+      console.log('Stored token in localStorage:', token)
       localStorage.setItem('user', JSON.stringify(userData))
-      console.log('Stored token and user data in localStorage')
+      console.log('Stored token and user data in localStorage',token,userData)
     }
     setUser(userData)
   }
@@ -122,13 +123,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     
     const token = localStorage.getItem('token')
-    return fetch(url, {
-      ...options,
-      headers: {
-        ...options.headers,
-        'Authorization': `Bearer ${token}`
-      }
-    })
+    if (!token) {
+      throw new Error('No authentication token found')
+    }
+
+    // Handle both fetch and axios requests
+    if (options.body) {
+      // If body exists, it's likely a fetch request
+      return fetch(url, {
+        ...options,
+        headers: {
+          ...options.headers,
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+    } else {
+      // If no body, check if there's data which indicates an axios request
+      const method = (options.method || 'GET').toUpperCase()
+      return fetch(url, {
+        ...options,
+        method,
+        headers: {
+          ...options.headers,
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: options.body ? JSON.stringify(options.body) : undefined
+      })
+    }
   }
 
   return (
@@ -144,4 +167,4 @@ export function useAuth() {
     throw new Error('useAuth must be used within an AuthProvider')
   }
   return context
-} 
+}
