@@ -1,6 +1,0 @@
-@JobBoardApp.Infrastructure_HostAddress = http://localhost:5252
-
-GET {{JobBoardApp.Infrastructure_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
