@@ -14,6 +14,7 @@ import SignUpModal from "@/components/sign-up-modal"
 import SignInModal from "@/components/sign-in-modal"
 import { useAuth } from "@/context/auth-context"
 
+
 // Available locations for the dropdown
 const locations = [
   { value: "all", label: "All Locations" },
@@ -58,6 +59,8 @@ export default function Home() {
   const [jobs, setJobs] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [headerVisible, setHeaderVisible] = useState(true)
+  const [lastScrollY, setLastScrollY] = useState(0)
 
   // Fetch jobs from backend
   useEffect(() => {
@@ -98,7 +101,12 @@ export default function Home() {
 
   // Handle scroll to main content
   const scrollToMainContent = () => {
-    mainContentRef.current?.scrollIntoView({ behavior: "smooth" })
+    const mainContent = document.getElementById("main-content")
+    if (mainContent) {
+      const yOffset = -10 // Small offset to ensure it's fully visible
+      const y = mainContent.getBoundingClientRect().top + window.pageYOffset + yOffset
+      window.scrollTo({ top: y, behavior: "smooth" })
+    }
   }
 
   // Handle resume upload
@@ -130,19 +138,32 @@ export default function Home() {
   // Track scroll position for header changes
   useEffect(() => {
     const handleScroll = () => {
-      const position = window.scrollY
-      if (position > window.innerHeight * 0.5) {
+      const currentScrollY = window.scrollY
+
+      // Determine if we're scrolling up or down
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        // Scrolling down and past threshold
+        setHeaderVisible(false)
+      } else {
+        // Scrolling up or at the top
+        setHeaderVisible(true)
+      }
+
+      // Update background color state
+      if (currentScrollY > window.innerHeight * 0.5) {
         setScrolled(true)
       } else {
         setScrolled(false)
       }
+
+      setLastScrollY(currentScrollY)
     }
 
     window.addEventListener("scroll", handleScroll, { passive: true })
     return () => {
       window.removeEventListener("scroll", handleScroll)
     }
-  }, [])
+  }, [lastScrollY])
 
   if (loading) {
     return <div className="text-center p-8">Loading jobs...</div>
@@ -155,9 +176,9 @@ export default function Home() {
     <div className="min-h-screen">
       {/* Fixed header that changes on scroll */}
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        className={`fixed top-0 left-0 right-0 z-30 transition-all duration-300 ${
           scrolled ? "bg-white shadow-md" : "bg-transparent"
-        }`}
+        } ${headerVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full"}`}
       >
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-8">
@@ -343,9 +364,9 @@ export default function Home() {
       </section>
 
       {/* Main Content Section */}
-      <div ref={mainContentRef} className="min-h-screen bg-gray-100 pt-20">
-        {/* Horizontal Filter Bar */}
-        <div className="bg-white shadow-sm border-b sticky top-20 z-10">
+      <div ref={mainContentRef} id="main-content" className="min-h-screen bg-gray-100 pt-0">
+        {/* Horizontal Filter Bar - Now inside main content */}
+        <div className="bg-white shadow-sm border-b mb-6">
           <div className="container mx-auto px-4 py-4">
             <div className="flex flex-col md:flex-row items-center gap-4">
               <div className="flex space-x-2 overflow-x-auto scrollbar-hide">
@@ -421,7 +442,7 @@ export default function Home() {
           </div>
         </div>
 
-        <main className="container mx-auto px-4 pt-6 pb-0">
+        <main className="container mx-auto px-4 pt-0 pb-0">
           <div className="flex flex-col lg:flex-row gap-6">
             <div className="w-full lg:w-1/3">
               <ProjectListings
