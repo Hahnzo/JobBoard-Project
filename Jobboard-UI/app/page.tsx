@@ -14,385 +14,6 @@ import SignUpModal from "@/components/sign-up-modal"
 import SignInModal from "@/components/sign-in-modal"
 import { useAuth } from "@/context/auth-context"
 
-// Extended mock data for projects - more items for pagination
-export const mockProjects = [
-  {
-    id: 1,
-    title: "Looking for Figma Designer for Gaming Theme",
-    description: "We are looking for a Figma designer for a 2 page design.",
-    fullDescription: [
-      "We are looking for a Figma designer for a 2 page design. If we are satisfied then more pages will follow. Also it will be a trial for a potential long term position.",
-      "The theme of the project is gaming related so it would be of advantage if you have done gaming related designs before.",
-      'We are not looking for a "Canva" designer so if you think you are good with Canva, please do not apply.',
-      "We are looking for someone who brings in his/her designer knowledge and brings in own ideas.",
-      "Start would be immediately.",
-    ],
-    company: "GameStudio",
-    logo: "/placeholder.svg?height=40&width=40",
-    logoBackground: "#00C4B4",
-    tags: ["UI Designer", "Figma", "Landing Page"],
-    rating: 5,
-    verified: true,
-    proposals: "10 to 15",
-    reviews: 48,
-    successProjects: 28,
-    totalSpent: "$60k+",
-    paymentVerified: true,
-    location: "Remote",
-    jobType: "Contract",
-  },
-  {
-    id: 2,
-    title: "UI/UX designer for responsive SaaS platform",
-    description: "Looking for a UI/UX designer to develop a responsive design for our SaaS platform.",
-    fullDescription: [
-      "Looking for a UI/UX designer to develop a responsive design for our SaaS platform.",
-      "We need someone with experience in designing modern, clean interfaces for web applications.",
-      "The project involves designing the main dashboard, user settings, and analytics pages.",
-      "You should have a strong portfolio showcasing similar work and be proficient with Figma.",
-      "This could turn into a long-term collaboration for the right candidate.",
-    ],
-    company: "Airbnb",
-    logo: "/placeholder.svg?height=40&width=40",
-    logoBackground: "#FF5A5F",
-    tags: ["Responsive", "Figma", "Mobile App Design"],
-    rating: 5,
-    verified: true,
-    proposals: "10 to 15",
-    reviews: 36,
-    successProjects: 22,
-    totalSpent: "$45k+",
-    paymentVerified: true,
-    location: "San Francisco, CA",
-    jobType: "Full-time",
-  },
-  {
-    id: 3,
-    title: "Fav icon development. You provided one Fav icon",
-    description: "You provided one Fav icon that we use as a reference.",
-    fullDescription: [
-      "You provided one Fav icon that we use as a reference.",
-      "We need a set of favicon icons for our website in different sizes and formats.",
-      "The icons should be consistent with our brand identity and work well on different browsers and devices.",
-      "Please include .ico, .png, and SVG formats in your deliverables.",
-      "Experience with icon design and knowledge of favicon best practices is required.",
-    ],
-    company: "Amazon",
-    logo: "/placeholder.svg?height=40&width=40",
-    logoBackground: "#FF9900",
-    tags: ["Icon design", "Figma", "balsamiq"],
-    rating: 5,
-    verified: true,
-    proposals: "10 to 15",
-    reviews: 52,
-    successProjects: 31,
-    totalSpent: "$75k+",
-    paymentVerified: true,
-    location: "Remote",
-    jobType: "Freelance",
-  },
-  {
-    id: 4,
-    title: "Graphic designer to create icons",
-    description: "We need a graphic designer to create a set of icons for our website.",
-    fullDescription: [
-      "We need a graphic designer to create a set of icons for our website.",
-      "The project requires designing 20-25 custom icons that match our brand style and color palette.",
-      "Icons should be delivered in SVG format and be optimized for web use.",
-      "We're looking for a designer with experience in creating cohesive icon sets.",
-      "Please share examples of icon work you've done in the past when applying.",
-    ],
-    company: "DesignCo",
-    logo: "/placeholder.svg?height=40&width=40",
-    logoBackground: "#6C5CE7",
-    tags: ["Graphic Design", "Icons", "Illustrator"],
-    rating: 4,
-    verified: true,
-    proposals: "5 to 10",
-    reviews: 24,
-    successProjects: 18,
-    totalSpent: "$30k+",
-    paymentVerified: true,
-    location: "New York, NY",
-    jobType: "Part-time",
-  },
-  {
-    id: 5,
-    title: "Frontend Developer with React Experience",
-    description: "Looking for a skilled frontend developer with React experience for our web application.",
-    fullDescription: [
-      "We are seeking a talented frontend developer with strong React experience to join our team.",
-      "You will be responsible for building user interfaces for our web application using React, Redux, and modern CSS.",
-      "The ideal candidate should have experience with responsive design and cross-browser compatibility.",
-      "Knowledge of TypeScript and testing frameworks is a plus.",
-      "This is a remote position with flexible working hours.",
-    ],
-    company: "TechCorp",
-    logo: "/placeholder.svg?height=40&width=40",
-    logoBackground: "#3498db",
-    tags: ["React", "Frontend", "JavaScript", "Redux"],
-    rating: 5,
-    verified: true,
-    proposals: "15 to 20",
-    reviews: 42,
-    successProjects: 35,
-    totalSpent: "$80k+",
-    paymentVerified: true,
-    location: "Remote",
-    jobType: "Full-time",
-  },
-  {
-    id: 6,
-    title: "Mobile App Developer for iOS",
-    description: "Experienced iOS developer needed for our health and fitness application.",
-    fullDescription: [
-      "We are looking for an experienced iOS developer to work on our health and fitness application.",
-      "The developer will be responsible for maintaining and improving our existing iOS app.",
-      "Strong knowledge of Swift, UIKit, and Core Data is required.",
-      "Experience with HealthKit and integrating with wearable devices is a plus.",
-      "This is a contract position with the possibility of extension.",
-    ],
-    company: "FitTech",
-    logo: "/placeholder.svg?height=40&width=40",
-    logoBackground: "#27ae60",
-    tags: ["iOS", "Swift", "Mobile", "HealthKit"],
-    rating: 4,
-    verified: true,
-    proposals: "8 to 12",
-    reviews: 31,
-    successProjects: 24,
-    totalSpent: "$65k+",
-    paymentVerified: true,
-    location: "Boston, MA",
-    jobType: "Contract",
-  },
-  {
-    id: 7,
-    title: "Backend Developer with Node.js",
-    description: "Looking for a backend developer with Node.js experience for our e-commerce platform.",
-    fullDescription: [
-      "We are seeking a backend developer with strong Node.js experience for our e-commerce platform.",
-      "You will be responsible for developing and maintaining our API services and database architecture.",
-      "Experience with Express.js, MongoDB, and RESTful API design is required.",
-      "Knowledge of payment gateway integrations and security best practices is a plus.",
-      "This is a full-time position with the option to work remotely.",
-    ],
-    company: "ShopWave",
-    logo: "/placeholder.svg?height=40&width=40",
-    logoBackground: "#e74c3c",
-    tags: ["Node.js", "Backend", "MongoDB", "API"],
-    rating: 5,
-    verified: true,
-    proposals: "12 to 18",
-    reviews: 39,
-    successProjects: 32,
-    totalSpent: "$75k+",
-    paymentVerified: true,
-    location: "Chicago, IL",
-    jobType: "Full-time",
-  },
-  {
-    id: 8,
-    title: "UX Researcher for Product Testing",
-    description: "UX researcher needed to conduct user testing and gather feedback for our product.",
-    fullDescription: [
-      "We are looking for a UX researcher to conduct user testing and gather feedback for our product.",
-      "The researcher will be responsible for planning and executing user research studies.",
-      "Experience with qualitative and quantitative research methods is required.",
-      "Strong analytical skills and the ability to present findings clearly are essential.",
-      "This is a part-time position with flexible hours.",
-    ],
-    company: "UserFirst",
-    logo: "/placeholder.svg?height=40&width=40",
-    logoBackground: "#9b59b6",
-    tags: ["UX Research", "User Testing", "Product Design"],
-    rating: 4,
-    verified: true,
-    proposals: "5 to 10",
-    reviews: 27,
-    successProjects: 21,
-    totalSpent: "$40k+",
-    paymentVerified: true,
-    location: "Seattle, WA",
-    jobType: "Part-time",
-  },
-  {
-    id: 9,
-    title: "Full Stack Developer for Startup",
-    description: "Full stack developer needed for an early-stage startup building a SaaS product.",
-    fullDescription: [
-      "We are an early-stage startup looking for a full stack developer to help build our SaaS product.",
-      "You will be working closely with the founding team to develop and iterate on features.",
-      "Experience with React, Node.js, and PostgreSQL is required.",
-      "Familiarity with AWS or other cloud platforms is a plus.",
-      "This is a full-time position with equity options.",
-    ],
-    company: "LaunchPad",
-    logo: "/placeholder.svg?height=40&width=40",
-    logoBackground: "#f39c12",
-    tags: ["Full Stack", "React", "Node.js", "Startup"],
-    rating: 5,
-    verified: true,
-    proposals: "15 to 20",
-    reviews: 18,
-    successProjects: 15,
-    totalSpent: "$55k+",
-    paymentVerified: true,
-    location: "Austin, TX",
-    jobType: "Full-time",
-  },
-  {
-    id: 10,
-    title: "DevOps Engineer for Cloud Infrastructure",
-    description: "DevOps engineer needed to manage and improve our cloud infrastructure.",
-    fullDescription: [
-      "We are looking for a DevOps engineer to manage and improve our cloud infrastructure.",
-      "You will be responsible for CI/CD pipelines, infrastructure as code, and monitoring systems.",
-      "Experience with AWS, Terraform, and Docker is required.",
-      "Knowledge of Kubernetes and microservices architecture is a plus.",
-      "This is a remote position with occasional on-site meetings.",
-    ],
-    company: "CloudTech",
-    logo: "/placeholder.svg?height=40&width=40",
-    logoBackground: "#1abc9c",
-    tags: ["DevOps", "AWS", "Terraform", "Docker"],
-    rating: 5,
-    verified: true,
-    proposals: "10 to 15",
-    reviews: 34,
-    successProjects: 29,
-    totalSpent: "$90k+",
-    paymentVerified: true,
-    location: "Remote",
-    jobType: "Full-time",
-  },
-  {
-    id: 11,
-    title: "Content Writer for Tech Blog",
-    description: "Experienced content writer needed for our technology blog and documentation.",
-    fullDescription: [
-      "We are seeking an experienced content writer for our technology blog and documentation.",
-      "You will be responsible for creating engaging articles, tutorials, and technical documentation.",
-      "Strong understanding of technology trends and the ability to explain complex concepts simply is required.",
-      "Experience with SEO best practices and content management systems is a plus.",
-      "This is a freelance position with ongoing work.",
-    ],
-    company: "TechBytes",
-    logo: "/placeholder.svg?height=40&width=40",
-    logoBackground: "#34495e",
-    tags: ["Content Writing", "Technical Writing", "SEO", "Blog"],
-    rating: 4,
-    verified: true,
-    proposals: "8 to 12",
-    reviews: 22,
-    successProjects: 18,
-    totalSpent: "$35k+",
-    paymentVerified: true,
-    location: "Remote",
-    jobType: "Freelance",
-  },
-  {
-    id: 12,
-    title: "Data Scientist for Analytics Platform",
-    description: "Data scientist needed to develop machine learning models for our analytics platform.",
-    fullDescription: [
-      "We are looking for a data scientist to develop machine learning models for our analytics platform.",
-      "You will be responsible for data analysis, feature engineering, and model development.",
-      "Experience with Python, pandas, scikit-learn, and TensorFlow is required.",
-      "Knowledge of NLP and computer vision techniques is a plus.",
-      "This is a full-time position with remote work options.",
-    ],
-    company: "DataInsight",
-    logo: "/placeholder.svg?height=40&width=40",
-    logoBackground: "#2980b9",
-    tags: ["Data Science", "Machine Learning", "Python", "TensorFlow"],
-    rating: 5,
-    verified: true,
-    proposals: "12 to 18",
-    reviews: 29,
-    successProjects: 24,
-    totalSpent: "$85k+",
-    paymentVerified: true,
-    location: "San Jose, CA",
-    jobType: "Full-time",
-  },
-  {
-    id: 13,
-    title: "Product Manager for FinTech App",
-    description: "Experienced product manager needed for our financial technology application.",
-    fullDescription: [
-      "We are seeking an experienced product manager for our financial technology application.",
-      "You will be responsible for product strategy, roadmap planning, and feature prioritization.",
-      "Experience in the financial services or banking industry is required.",
-      "Strong understanding of user-centered design principles and agile methodologies is essential.",
-      "This is a full-time position based in our New York office.",
-    ],
-    company: "FinanceFlow",
-    logo: "/placeholder.svg?height=40&width=40",
-    logoBackground: "#16a085",
-    tags: ["Product Management", "FinTech", "Agile", "Strategy"],
-    rating: 5,
-    verified: true,
-    proposals: "10 to 15",
-    reviews: 31,
-    successProjects: 26,
-    totalSpent: "$95k+",
-    paymentVerified: true,
-    location: "New York, NY",
-    jobType: "Full-time",
-  },
-  {
-    id: 14,
-    title: "QA Engineer for Mobile Applications",
-    description: "QA engineer needed to ensure the quality of our mobile applications.",
-    fullDescription: [
-      "We are looking for a QA engineer to ensure the quality of our mobile applications.",
-      "You will be responsible for manual and automated testing of our iOS and Android apps.",
-      "Experience with mobile testing frameworks and tools like Appium is required.",
-      "Knowledge of CI/CD pipelines and test automation best practices is a plus.",
-      "This is a contract position with the possibility of extension.",
-    ],
-    company: "AppQuality",
-    logo: "/placeholder.svg?height=40&width=40",
-    logoBackground: "#d35400",
-    tags: ["QA", "Mobile Testing", "Automation", "Appium"],
-    rating: 4,
-    verified: true,
-    proposals: "6 to 10",
-    reviews: 25,
-    successProjects: 20,
-    totalSpent: "$45k+",
-    paymentVerified: true,
-    location: "Portland, OR",
-    jobType: "Contract",
-  },
-  {
-    id: 15,
-    title: "Blockchain Developer for NFT Platform",
-    description: "Blockchain developer needed for our NFT marketplace platform.",
-    fullDescription: [
-      "We are seeking a blockchain developer for our NFT marketplace platform.",
-      "You will be responsible for smart contract development and blockchain integration.",
-      "Experience with Ethereum, Solidity, and Web3.js is required.",
-      "Knowledge of NFT standards (ERC-721, ERC-1155) and marketplace mechanics is essential.",
-      "This is a remote position with competitive compensation.",
-    ],
-    company: "NFTWorld",
-    logo: "/placeholder.svg?height=40&width=40",
-    logoBackground: "#8e44ad",
-    tags: ["Blockchain", "Solidity", "NFT", "Ethereum"],
-    rating: 5,
-    verified: true,
-    proposals: "15 to 20",
-    reviews: 19,
-    successProjects: 16,
-    totalSpent: "$70k+",
-    paymentVerified: true,
-    location: "Remote",
-    jobType: "Contract",
-  },
-]
-
 // Available locations for the dropdown
 const locations = [
   { value: "all", label: "All Locations" },
@@ -433,16 +54,39 @@ export default function Home() {
   const projectsPerPage = 20
   const [showSignUpModal, setShowSignUpModal] = useState(false)
   const [showSignInModal, setShowSignInModal] = useState(false)
+  // State to track jobs from backend
+  const [jobs, setJobs] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  // Find the selected project from the mock data
-  const selectedProject = mockProjects.find((project) => project.id === selectedProjectId) || mockProjects[0]
+  // Fetch jobs from backend
+  useEffect(() => {
+    const fetchJobs = async () => {
+      setLoading(true)
+      setError(null)
+      try {
+        const res = await fetch('http://localhost:3001/api/jobs')
+        if (!res.ok) throw new Error('Failed to fetch jobs')
+        const data = await res.json()
+        setJobs(data.jobs || [])
+      } catch (err: any) {
+        setError(err.message || 'Failed to fetch jobs')
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchJobs()
+  }, [])
 
-  // Filter projects based on location and job type
-  const filteredProjects = mockProjects.filter((project) => {
+  // Find the selected project from jobs
+  const selectedProject = jobs.find((project) => project.id === selectedProjectId) || jobs[0]
+
+  // Filter jobs based on location and job type
+  const filteredProjects = jobs.filter((project) => {
     const locationMatch =
-      selectedLocation === "all" || project.location.toLowerCase().includes(selectedLocation.toLowerCase())
+      selectedLocation === "all" || (project.location && project.location.toLowerCase().includes(selectedLocation.toLowerCase()))
     const jobTypeMatch =
-      selectedJobType === "all" || project.jobType.toLowerCase().includes(selectedJobType.toLowerCase())
+      selectedJobType === "all" || (project.jobType || project.job_type || '').toLowerCase().includes(selectedJobType.toLowerCase())
     return locationMatch && jobTypeMatch
   })
 
@@ -499,6 +143,13 @@ export default function Home() {
       window.removeEventListener("scroll", handleScroll)
     }
   }, [])
+
+  if (loading) {
+    return <div className="text-center p-8">Loading jobs...</div>
+  }
+  if (error) {
+    return <div className="text-center p-8 text-red-500">{error}</div>
+  }
 
   return (
     <div className="min-h-screen">

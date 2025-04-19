@@ -31,7 +31,7 @@ export default function ProjectDetail({ project, onApplyClick }: ProjectDetailPr
       <div className="mb-6">
         <h2 className="text-sm font-medium text-gray-700 mb-3">Skills and Expertise</h2>
         <div className="flex flex-wrap gap-2">
-          {project.tags.map((tag, index) => (
+          {project.tags?.map((tag, index) => (
             <Badge key={index} variant="outline" className="bg-gray-100 text-gray-700 border-0 rounded-md">
               {tag}
             </Badge>
@@ -44,13 +44,13 @@ export default function ProjectDetail({ project, onApplyClick }: ProjectDetailPr
         <div className="grid grid-cols-3 gap-4 mb-4">
           <div>
             <div className="text-xs text-gray-500 mb-1">
-              {project.rating.toFixed(2)} of {project.reviews || 0} reviews
+              {(project.rating ? project.rating.toFixed(2) : "0.00")} of {project.reviews || 0} reviews
             </div>
             <div className="flex">
               {[...Array(5)].map((_, i) => (
                 <svg
                   key={i}
-                  className={`h-4 w-4 ${i < project.rating ? "text-yellow-400" : "text-gray-300"}`}
+                  className={`h-4 w-4 ${i < (project.rating || 0) ? "text-yellow-400" : "text-gray-300"}`}
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >

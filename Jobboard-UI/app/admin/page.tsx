@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { createJob } from "@/api/jobs" // Import the jobs API service
+import { createJob } from "../../../Jobboard-backend-supabase/src/api/jobs"; // Updated import path
 
 export default function AdminPage() {
   const router = useRouter()
@@ -27,10 +27,15 @@ export default function AdminPage() {
   const [jobType, setJobType] = useState("full-time")
   const [experienceLevel, setExperienceLevel] = useState("mid-level")
   
-  // Redirect if not logged in
+  // Redirect if not logged in or not a company
   useEffect(() => {
-    if (!isLoading && !user) {
-      router.push('/auth/login');
+    if (!isLoading) {
+      if (!user) {
+        router.push('/auth/login');
+      } else if (user.role !== 'employer' && user.role !== 'admin') {
+        alert('Access denied: Employer role required');
+        router.push('/');
+      }
     }
   }, [user, isLoading, router]);
 

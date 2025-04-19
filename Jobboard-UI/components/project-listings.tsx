@@ -43,7 +43,7 @@ interface ProjectListingsProps {
 }
 
 export default function ProjectListings({
-  projects,
+  projects = [],
   selectedProjectId,
   onSelectProject,
   currentPage,
@@ -52,6 +52,10 @@ export default function ProjectListings({
 }: ProjectListingsProps) {
   const [savedProjects, setSavedProjects] = useState<number[]>([])
   const scrollContainerRef = useRef<HTMLDivElement>(null)
+
+  if (!projects || projects.length === 0) {
+    return <div className="text-center p-8">No projects available</div>;
+  }
 
   const toggleSaveProject = (id: number, e: React.MouseEvent) => {
     e.stopPropagation() // Prevent triggering the card click
@@ -97,7 +101,7 @@ export default function ProjectListings({
           </div>
 
           <div className="flex flex-wrap gap-2 mb-3">
-            {project.tags.map((tag, index) => (
+            {(project.tags || []).map((tag, index) => (
               <Badge key={index} variant="outline" className="bg-gray-100 text-gray-700 border-0 rounded-md text-xs">
                 {tag}
               </Badge>
@@ -136,6 +140,7 @@ export default function ProjectListings({
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious
+                size="default"
                 onClick={() => onPageChange(Math.max(currentPage - 1, 1))}
                 className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
               />
@@ -143,7 +148,7 @@ export default function ProjectListings({
 
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <PaginationItem key={page}>
-                <PaginationLink isActive={currentPage === page} onClick={() => onPageChange(page)}>
+                <PaginationLink size="default" isActive={currentPage === page} onClick={() => onPageChange(page)}>
                   {page}
                 </PaginationLink>
               </PaginationItem>
@@ -151,6 +156,7 @@ export default function ProjectListings({
 
             <PaginationItem>
               <PaginationNext
+                size="default"
                 onClick={() => onPageChange(Math.min(currentPage + 1, totalPages))}
                 className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
               />
